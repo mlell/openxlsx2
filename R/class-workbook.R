@@ -307,6 +307,7 @@ wbWorkbook <- R6::R6Class(
       subject          = NULL,
       category         = NULL,
       datetime_created = Sys.time(),
+      datetime_modified = Sys.time(),
       theme            = NULL,
       keywords         = NULL,
       comments         = NULL,
@@ -344,6 +345,7 @@ wbWorkbook <- R6::R6Class(
       assert_class(company,          "character", or_null = TRUE)
 
       assert_class(datetime_created, "POSIXt")
+      assert_class(datetime_modified, "POSIXt")
 
       stopifnot(
         length(title) <= 1L,
@@ -357,6 +359,7 @@ wbWorkbook <- R6::R6Class(
         subject           = subject,
         category          = category,
         datetime_created  = datetime_created,
+        datetime_modified  = datetime_created,
         keywords          = keywords,
         comments          = comments,
         manager           = manager,
@@ -6890,13 +6893,14 @@ wbWorkbook <- R6::R6Class(
     },
 
     #' @description Set a property of a workbook
-    #' @param title,subject,category,datetime_created,modifier,keywords,comments,manager,company,custom A workbook property to set
+    #' @param title,subject,category,datetime_created,datetime_modified,modifier,keywords,comments,manager,company,custom A workbook property to set
     set_properties = function(
       creator          = NULL,
       title            = NULL,
       subject          = NULL,
       category         = NULL,
-      datetime_created = Sys.time(),
+      datetime_created = NULL,
+      datetime_modified = NULL,
       modifier         = NULL,
       keywords         = NULL,
       comments         = NULL,
@@ -6905,9 +6909,9 @@ wbWorkbook <- R6::R6Class(
       custom           = NULL
     ) {
 
+      
       datetime_created <-
         getOption("openxlsx2.datetimeCreated", datetime_created)
-
 
       core_dctitle <- "dc:title"
       core_subject <- "dc:subject"
@@ -6970,12 +6974,23 @@ wbWorkbook <- R6::R6Class(
         self$app$Company <- xml_node_create("Company", xml_children = company)
       }
 
-      xml_properties[core_created] <- xml_node_create(core_created,
-        xml_attributes = c(
-          `xsi:type` = "dcterms:W3CDTF"
-        ),
-        xml_children = format(as_POSIXct_utc(datetime_created), "%Y-%m-%dT%H:%M:%SZ")
-      )
+      if (!is.null(datetime_created)){
+        xml_properties[core_created] <- xml_node_create(core_created,
+          xml_attributes = c(
+            `xsi:type` = "dcterms:W3CDTF"
+          ),
+          xml_children = format(as_POSIXct_utc(datetime_created), "%Y-%m-%dT%H:%M:%SZ")
+        )
+      }
+      
+      if (!is.null(datetime_modified)){
+        xml_properties[core_modifid] <- xml_node_create(core_modifid,
+          xml_attributes = c(
+            `xsi:type` = "dcterms:W3CDTF"
+          ),
+          xml_children = format(as_POSIXct_utc(datetime_modified), "%Y-%m-%dT%H:%M:%SZ")
+        )
+      }
 
       if (!is.null(modifier)) {
         xml_properties[core_lastmod] <- xml_node_create(core_lastmod, xml_children = modifier)

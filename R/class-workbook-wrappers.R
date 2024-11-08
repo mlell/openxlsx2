@@ -14,6 +14,7 @@
 #' @param creator Creator of the workbook (your name). Defaults to login username or `options("openxlsx2.creator")` if set.
 #' @param title,subject,category,keywords,comments,manager,company Workbook property, a string.
 #' @param datetime_created The time of the workbook is created
+#' @param datetime_modified The time of the workbook was last modified
 #' @param theme Optional theme identified by string or number.
 #'   See **Details** for options.
 #' @param ... additional arguments
@@ -39,6 +40,7 @@ wb_workbook <- function(
   subject          = NULL,
   category         = NULL,
   datetime_created = Sys.time(),
+  datetime_modified = Sys.time(),
   theme            = NULL,
   keywords         = NULL,
   comments         = NULL,
@@ -52,6 +54,7 @@ wb_workbook <- function(
     subject          = subject,
     category         = category,
     datetime_created = datetime_created,
+    datetime_modified = datetime_modified,
     theme            = theme,
     keywords         = keywords,
     comments         = comments,
@@ -2767,7 +2770,7 @@ wb_get_properties <- function(wb) {
 
 #' @rdname properties-wb
 #' @export
-wb_set_properties <- function(wb, creator = NULL, title = NULL, subject = NULL, category = NULL, datetime_created = Sys.time(), modifier = NULL, keywords = NULL, comments = NULL, manager = NULL, company = NULL, custom = NULL) {
+wb_set_properties <- function(wb, creator = NULL, title = NULL, subject = NULL, category = NULL, datetime_created = NULL, datetime_modified = NULL, modifier = NULL, keywords = NULL, comments = NULL, manager = NULL, company = NULL, custom = NULL) {
   assert_workbook(wb)
   wb$clone()$set_properties(
     creator           = creator,
@@ -2775,6 +2778,7 @@ wb_set_properties <- function(wb, creator = NULL, title = NULL, subject = NULL, 
     subject           = subject,
     category          = category,
     datetime_created  = datetime_created,
+    datetime_modified = datetime_modified,
     modifier          = modifier,
     keywords          = keywords,
     comments          = comments,
